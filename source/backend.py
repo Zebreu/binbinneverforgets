@@ -73,7 +73,7 @@ def create_report():
 
     today = pd.Timestamp.today()
     
-    connection = sqlite3.connect('database.db')
+    connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
     checks = pd.read_sql('SELECT * from inventory_log', con = connection)
     checks['date'] = pd.to_datetime(checks['date'])
     checks = checks.sort_values('date')
@@ -107,7 +107,7 @@ def update_inventory_log():
     df['date'] = dates
     df['item'] = items
 
-    connection = sqlite3.connect('database.db')
+    connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
     df.to_sql('inventory_log', con=connection, if_exists='append', index=False)
 
     return f'Updated {len(items)} items'
