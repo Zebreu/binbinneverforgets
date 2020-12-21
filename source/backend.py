@@ -1,11 +1,14 @@
 import sqlite3
+import os
 
 import pandas as pd
 from flask import Flask
 from flask import request
 
+
 app = Flask(__name__)
 
+working_directory = os.path.dirname(__file__)
 
 def create_heatmap(schedules):
     """Represents upcoming tasks as a calendar heatmap."""
@@ -51,11 +54,11 @@ def read_master_data(inventory_checked = True):
     
     today = pd.Timestamp.today()
 
-    df = pd.read_csv('horaire_data.csv')
+    df = pd.read_csv(os.path.join(working_directory, 'horaire_data.csv'))
     df['date'] = pd.to_datetime(df['date'])
     df['date_added'] = today
 
-    connection = sqlite3.connect('database.db')
+    connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
     df.to_sql('master_data', con=connection, if_exists='append', index=False)
     
     if inventory_checked:
