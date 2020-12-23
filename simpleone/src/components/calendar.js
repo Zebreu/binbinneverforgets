@@ -8,29 +8,18 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from "@fullcalendar/interaction";
 
+function handleDateClick (arg) { alert(arg.dateStr)}
+
 function MyCalendar (props) {
     const localizer = momentLocalizer(moment);
     console.log(localizer)
     const [value, onChange] = useState(new Date());
     const myEventsList = [];
-    const style = {backgroudColor: 'white'}
+    const style = {backgroudColor: 'white'}      
     return (
         <div>
             
-        <Calendar
-            onChange={onChange}
-            value={value}
-        />
-<br></br>
-<div>
-    <BigCalendar
-      localizer={localizer}
-      events={myEventsList}
-      startAccessor="start"
-      endAccessor="end"
-    />
-  </div>
-  <br></br>
+
   <FullCalendar
         plugins={[ dayGridPlugin, interactionPlugin ]}
         initialView="dayGridMonth"
@@ -39,7 +28,7 @@ function MyCalendar (props) {
             { title: 'event 1', date: '2020-12-01' },
             { title: 'event 2', date: '2020-12-02' }
         ]}
-        dateClick={benla()}
+        dateClick={handleDateClick}
       />
   </div>
 
@@ -51,8 +40,6 @@ function MyCalendar (props) {
 function getFormatDate(date) {
     return `${date.getFullYear()}${('0' + (date.getMonth() + 1)).slice(-2)}${('0' + date.getDate()).slice(-2)}`;
 };
-function benla() {
-    alert('allo');
-}
+
 
 export default MyCalendar
