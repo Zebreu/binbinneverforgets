@@ -16,16 +16,36 @@
 
 */
 /*eslint-disable*/
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 // reactstrap components
 import { Container, Nav, NavItem, NavLink } from "reactstrap";
 
+
+
 function Footer() {
+  const [backnumber, setBacknumber] = useState(0);
+
+  function get_my_data() {
+    fetch('/just_a_number').then(res => res.json()).
+        then(data => {setBacknumber(data);});
+  };
+
+  useEffect(() => {
+    get_my_data();
+  }, []);
+
+  console.log(backnumber);
   return (
     <footer className="footer">
       <Container fluid>
         <Nav>
+        <NavItem>
+            <NavLink>
+              <div onClick = {() => get_my_data()}>Number: {backnumber.number}</div> 
+            </NavLink>
+          </NavItem>
+
           <NavItem>
             <NavLink href="https://www.creative-tim.com/?ref=bdr-user-archive-footer">
               Creative Tim

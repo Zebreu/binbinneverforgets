@@ -47,5 +47,6 @@
   "devDependencies": {
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.8"
-  }
+  },
+  "proxy": "http://localhost:5000"
 }

@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import random
 
 import pandas as pd
 from flask import Flask
@@ -46,6 +47,11 @@ def generate_upcoming_tasks(merged):
 @app.route('/')
 def hello_world():
     return 'Binbin never forgets!'
+
+
+@app.route('/just_a_number')
+def gimme_a_number():
+    return {'number': random.randint(0,99)}
 
 
 @app.route('/read_master_data')
