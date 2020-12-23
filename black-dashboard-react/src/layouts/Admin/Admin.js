@@ -28,6 +28,8 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
 import routes from "routes.js";
 
+import { layoutVars } from "variables/global.js";
+
 import logo from "assets/img/react-logo.png";
 import { BackgroundColorContext } from "contexts/BackgroundColorContext";
 
@@ -39,6 +41,7 @@ function Admin(props) {
   const [sidebarOpened, setsidebarOpened] = React.useState(
     document.documentElement.className.indexOf("nav-open") !== -1
   );
+  console.log(props, 'props');
   React.useEffect(() => {
     if (navigator.platform.indexOf("Win") > -1) {
       document.documentElement.className += " perfect-scrollbar-on";
@@ -101,20 +104,23 @@ function Admin(props) {
     }
     return "Brand";
   };
+  console.log(layoutVars);
+  // Conditional for the sidebar. We only have one page so we don't need a sidebar. For now.
+  let sideBar = layoutVars.displaySidebar ? <Sidebar
+      routes={routes}
+      logo={{
+        outterLink: "https://www.creative-tim.com/",
+        text: "Creative Tim",
+        imgSrc: logo,
+      }}
+      toggleSidebar={toggleSidebar}
+    /> : null ;
   return (
     <BackgroundColorContext.Consumer>
       {({ color, changeColor }) => (
         <React.Fragment>
           <div className="wrapper">
-            <Sidebar
-              routes={routes}
-              logo={{
-                outterLink: "https://www.creative-tim.com/",
-                text: "Creative Tim",
-                imgSrc: logo,
-              }}
-              toggleSidebar={toggleSidebar}
-            />
+            {sideBar}
             <div className="main-panel" ref={mainPanelRef} data={color}>
               <AdminNavbar
                 brandText={getBrandText(location.pathname)}
@@ -131,7 +137,9 @@ function Admin(props) {
               }
             </div>
           </div>
-          <FixedPlugin bgColor={color} handleBgClick={changeColor} />
+          {
+          layoutVars.fixedPlugin ? <FixedPlugin bgColor={color} handleBgClick={changeColor} /> : null
+          }
         </React.Fragment>
       )}
     </BackgroundColorContext.Consumer>

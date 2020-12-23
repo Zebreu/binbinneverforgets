@@ -30,7 +30,7 @@
   }
 
   &.navbar-absolute{
-    position: absolute;
+    position: absolute; // no more sidebar
     z-index: 1050;
   }
 
@@ -100,7 +100,7 @@
   }
 
   .navbar-brand {
-    position: fixed;
+    position: relative; // used to be fixed. no more sidebar.
     padding-top: .3125rem;
     padding-bottom: .3125rem;
     color: $white;

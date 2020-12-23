@@ -39,6 +39,8 @@ import {
   ModalHeader,
 } from "reactstrap";
 
+import { layoutVars } from "variables/global";
+
 function AdminNavbar(props) {
   const [collapseOpen, setcollapseOpen] = React.useState(false);
   const [modalSearch, setmodalSearch] = React.useState(false);
@@ -76,6 +78,7 @@ function AdminNavbar(props) {
       <Navbar className={classNames("navbar-absolute", color)} expand="lg">
         <Container fluid>
           <div className="navbar-wrapper">
+            { layoutVars.displaySidebar ?
             <div
               className={classNames("navbar-toggle d-inline", {
                 toggled: props.sidebarOpened,
@@ -86,7 +89,8 @@ function AdminNavbar(props) {
                 <span className="navbar-toggler-bar bar2" />
                 <span className="navbar-toggler-bar bar3" />
               </NavbarToggler>
-            </div>
+            </div> : null
+            }
             <NavbarBrand href="#pablo" onClick={(e) => e.preventDefault()}>
               {props.brandText}
             </NavbarBrand>
