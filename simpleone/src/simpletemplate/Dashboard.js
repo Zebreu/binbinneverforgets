@@ -21,7 +21,8 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
-import Orders from './Orders';
+import FreeformTable from '../components/freeformtable';
+import OwnDataTable from '../components/datatable';
 import MyCalendar from '../components/calendar';
 
 function Copyright() {
@@ -208,17 +209,19 @@ export default function Dashboard() {
                 <Deposits />
               </Paper>
             </Grid>
-            {/* Recent Orders */}
+            {/* Freeform Table */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <Orders />
+                <FreeformTable />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <Paper className={classes.paper}>
+                <OwnDataTable />
               </Paper>
             </Grid>
           </Grid>
-          <MyCalendar></MyCalendar>
-
-
-        
+          <MyCalendar></MyCalendar>        
           <Box pt={4}>
             <Copyright />
           </Box>

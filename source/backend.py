@@ -93,6 +93,9 @@ def create_report():
     print(schedules)
     print(heatmap)
 
+    merged.insert(0, 'id', pd.RangeIndex(len(merged)))
+    merged['need_to_check'] = merged['need_to_check'].astype(str)
+
     return merged.to_json(orient='split', index=False)
 
 
