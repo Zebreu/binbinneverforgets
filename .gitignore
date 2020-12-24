@@ -134,3 +134,5 @@ dmypy.json
 # Node stuff
 black-dashboard-react/node_modules/
 black-dashboard-react/.eslintcache
+simpleone/node_modules/
+simpleone/.eslintcache
