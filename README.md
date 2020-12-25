@@ -4,6 +4,7 @@ As if you had the memory and discipline of a venerable wizard
 ## Deployment
 
 `cd source && python backend.py`
+
 `cd simpleone && npm start`
 
 ## Usage
