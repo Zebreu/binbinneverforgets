@@ -1,12 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-
+import { Box, Button } from '@material-ui/core';
 import { DataGrid } from '@material-ui/data-grid';
-
-import Title from '../simpletemplate/Title';
-
-const title = "Report";
 
 const columns = [
     { field: 'id', headerName: 'ID'},
@@ -30,19 +24,17 @@ const columns = [
   ];
   
 const rows = [
-    { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
-    { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-    { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-    { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-    { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-    { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-    { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-    { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-    { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+    { id: 1, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+    { id: 2, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+    { id: 3, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+    { id: 4, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+    { id: 5, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+    { id: 6, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 ];
 
 export default function OwnDataTable() {
     const [report, setReport] = useState();
+    const [selection, setSelection] = useState([]);
 
     function get_report() {
         fetch('/create_report')
@@ -55,8 +47,20 @@ export default function OwnDataTable() {
     }, []);
 
     return (
+ 
         <div style={{ height: 400, width: '100%' }}>
-        <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
+        <DataGrid rows={rows} columns={columns} 
+        pageSize={5} 
+        checkboxSelection       
+        onSelectionChange={(newSelection) => {
+          setSelection(newSelection.rowIds);
+        }}
+        
+        />
+        <Box pt={40.5} textAlign='left' pl={2}>
+        <Button variant='contained' color='primary' onClick={() => (alert(selection))}>Check</Button>
+        </Box>
         </div>
+
     );
 }
