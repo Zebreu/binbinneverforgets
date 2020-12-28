@@ -173,6 +173,28 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
+          <Box pt={4}>
+            <Grid container spacing={3}>
+              <Grid item item xs={12} md={6} lg={8}>
+                <Paper className={fixedHeightPaper}>
+                  <Box>
+                    <Typography component="h1" variant="h3" color="secondary" noWrap className={classes.title}>
+                      Dans ta face, Gih.
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Grid>  
+              <Grid item xs={12} md={6} lg={4}>
+                <Paper className={fixedHeightPaper}>
+                  <Box>
+                    <Typography component="h1" variant="h3" color="primary" noWrap className={classes.title}>
+                      Merci, Zeb.
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Grid> 
+            </Grid>
+          </Box>
           <Grid container spacing={3}>
             {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
@@ -194,6 +216,9 @@ export default function Dashboard() {
             </Grid>
           </Grid>
           <MyCalendar></MyCalendar>
+
+
+        
           <Box pt={4}>
             <Copyright />
           </Box>
