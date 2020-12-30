@@ -16,9 +16,7 @@ function MyCalendar (props) {
         .then(data => {setEvents(data);});
     };
 
-    useEffect(() => {
-        get_events();
-    }, []);
+    useEffect(get_events, []);
 
     return (
         <div>            
