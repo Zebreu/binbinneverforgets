@@ -221,7 +221,9 @@ export default function Dashboard() {
               </Paper>
             </Grid>
           </Grid>
+          <Box pt={4}>
           <MyCalendar></MyCalendar>        
+          </Box>
           <Box pt={4}>
             <Copyright />
           </Box>
