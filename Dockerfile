@@ -10,4 +10,6 @@ RUN bash Miniconda3-py37_4.8.3-Linux-x86_64.sh -b
 
 COPY source source
 
-CMD ["cat", "source/backend.py"]
+WORKDIR source
+
+CMD ["/root/miniconda3/bin/python", "backend.py"]

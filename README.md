@@ -7,6 +7,10 @@ Execute the following command in the same directory as the file `Dockerfile`
 
 `DOCKER_BUILDKIT=1 docker build -t binbinproject .`
 
+## To execute the image
+
+`docker run -p 5000:5000 binbinproject`
+
 ## Deployment
 
 `cd source && python backend.py`
