@@ -5,7 +5,7 @@ As if you had the memory and discipline of a venerable wizard
 
 Execute the following command in the same directory as the file `Dockerfile`
 
-`DOCKER_BUILDKIT=1 docker build -t binbinproject .`
+`docker build -t binbinproject .`
 
 ## To execute the image
 
