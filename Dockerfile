@@ -20,5 +20,6 @@ RUN mkdir templates
 
 COPY /simpleone/build templates
 
+COPY /simpleone/build/static static
 
 CMD ["/root/miniconda3/bin/python", "backend.py"]
