@@ -2,11 +2,22 @@ import sqlite3
 import os
 
 import pandas as pd
-from flask import Flask, request, json
-
-app = Flask(__name__)
+from flask import Flask, request, json, render_template, send_from_directory
 
 working_directory = os.path.dirname(__file__)
+
+# set the project root directory as the static folder, you can set others.
+app = Flask(__name__) 
+#'''static_folder='/static')'''
+
+'''@app.route('/static/js/<path:path>')
+def send_js(path):
+    return send_from_directory('js', path)
+
+@app.route('/static/css/<path:path>')
+def send_css(path):
+    return send_from_directory('css', path)'''
+
 
 def create_heatmap(schedules):
     """Represents upcoming tasks as a calendar heatmap."""
@@ -63,7 +74,7 @@ def inspect_inventory_log():
 
 @app.route('/')
 def hello_world():
-    return 'Binbin never forgets!'
+    return render_template("index.html")
 
 
 @app.route('/read_master_data')
@@ -132,4 +143,4 @@ def update_inventory_log():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run("0.0.0.0",debug=True,port=80)
