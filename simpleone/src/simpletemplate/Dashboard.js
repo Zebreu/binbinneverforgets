@@ -24,7 +24,7 @@ import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 import MyCalendar from '../components/calendar';
-import UploadButton from '../components/uploadbutton1';
+import UploadButton from '../components/uploadbutton';
 
 function Copyright() {
   return (
