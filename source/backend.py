@@ -6,17 +6,7 @@ from flask import Flask, request, json, render_template, send_from_directory
 
 working_directory = os.path.dirname(__file__)
 
-# set the project root directory as the static folder, you can set others.
 app = Flask(__name__) 
-#'''static_folder='/static')'''
-
-'''@app.route('/static/js/<path:path>')
-def send_js(path):
-    return send_from_directory('js', path)
-
-@app.route('/static/css/<path:path>')
-def send_css(path):
-    return send_from_directory('css', path)'''
 
 
 def create_heatmap(schedules):
