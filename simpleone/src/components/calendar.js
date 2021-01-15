@@ -23,7 +23,7 @@ function MyCalendar (props) {
         <FullCalendar
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"
-            weekends={false}
+            weekends={true}
             events={events}
             dateClick={handleDateClick}
         />
