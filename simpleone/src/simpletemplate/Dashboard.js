@@ -24,6 +24,7 @@ import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 import MyCalendar from '../components/calendar';
+import UploadButton from '../components/uploadbutton1';
 
 function Copyright() {
   return (
@@ -133,7 +134,7 @@ export default function Dashboard() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
+      <AppBar position="absolute" className={clsx(classes.appBar, open)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"
@@ -148,29 +149,12 @@ export default function Dashboard() {
             Dashboard
           </Typography>
           <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
+            <Badge badgeContent={0} color="secondary">
               <NotificationsIcon />
             </Badge>
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>{mainListItems}</List>
-        <Divider />
-        <List>{secondaryListItems}</List>
-      </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
@@ -179,6 +163,13 @@ export default function Dashboard() {
               <TextField id="search-bar-temp" label="Search" variant="outlined" />
             </Grid>
           </Box>
+
+          <Box pt={1}>
+            <Grid container direction="row" justify="flex-start" xs={12} md={12} lg={12}>
+              <UploadButton />
+            </Grid>
+          </Box>
+          
           <Box pt={4}>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={12} md={4} lg={3}>
@@ -198,34 +189,7 @@ export default function Dashboard() {
                 </Paper>
               </Grid> 
             </Grid>
-          </Box>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Chart />
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Deposits />
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Orders />
-              </Paper>
-            </Grid>
-          </Grid>
-          
-
-
-        
-          <Box pt={4}>
-            <Copyright />
-          </Box>
+          </Box>               
         </Container>
       </main>
     </div>
