@@ -116,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 700,
+    height: 780,
   },
 }));
 
@@ -157,7 +157,7 @@ export default function Dashboard() {
       </AppBar>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
+        <Container maxWidth="xl" className={classes.container}>
           <Box pt= {1}>
             <Grid container direction="row" justify="flex-end" xs={12} md={12} lg={12}>
               <TextField id="search-bar-temp" label="Search" variant="outlined" />
