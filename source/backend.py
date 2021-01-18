@@ -28,7 +28,7 @@ def create_heatmap(schedules):
     return resampled
 
 
-def generate_upcoming_tasks(merged):
+def generate_upcoming_tasks(merged, explude_past=True):
     """Generates upcoming tasks given information about last checked dates and master data."""
     
     today = pd.Timestamp.today()
@@ -36,7 +36,8 @@ def generate_upcoming_tasks(merged):
     schedules = []
     for i, row in merged.iterrows():
         schedule = pd.date_range(row['date_checked'], today+pd.Timedelta(13, 'W'), freq=f'{row["frequency"]*7}D')
-        schedule = schedule[schedule >= today]
+        if explude_past:
+            schedule = schedule[schedule >= today]
         schedules.append((row['item'],schedule))
 
     return schedules
@@ -104,6 +105,23 @@ def get_upcoming_items():
     return json.jsonify(return_values)
 
 
+@app.route('/get_tasks')
+def get_tasks():
+    merged = inspect_inventory_log()
+    merged = merged[merged.need_to_check]
+    schedules = generate_upcoming_tasks(merged, explude_past=False)
+
+    grouped_tasks = dict()
+    for schedule in schedules:
+        title = schedule[0]
+        check_date = schedule[1][-1].strftime(format='%Y-%m-%d')
+        grouped_tasks.setdefault(check_date, []).append(title)
+        # return_values.append([title, check_date])
+
+    return json.jsonify(grouped_tasks)
+
+
+
 @app.route('/create_report')
 def create_report():
     """Creates a report of due checks."""
@@ -133,4 +151,4 @@ def update_inventory_log():
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0",debug=True,port=80)
+    app.run("0.0.0.0",debug=True,port=5000)

@@ -24,6 +24,7 @@ import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 import MyCalendar from '../components/calendar';
+import TaskList from '../components/tasklist'
 
 function Copyright() {
   return (
@@ -186,6 +187,7 @@ export default function Dashboard() {
                   <Box>
                     <Typography component="h1" variant="h3" color="secondary" noWrap className={classes.title}>
                       Tasklist here
+                      <TaskList />
                     </Typography>
                   </Box>
                 </Paper>
