@@ -67,13 +67,17 @@ def inspect_inventory_log():
 def hello_world():
     return render_template("index.html")
 
-
-@app.route('/read_master_data')
-def read_master_data(inventory_checked = True):
+@app.route('/upload_master_data', methods=['POST'])
+def upload_master_data(inventory_checked=True):
     """Updates a master table from an input file."""
     today = pd.Timestamp.today()
 
-    df = pd.read_csv(os.path.join(working_directory, 'horaire_data.csv'))
+    #df = pd.read_csv(os.path.join(working_directory, 'horaire_data.csv'))
+    
+    csv = request.files.get('file')
+    csv.save('temporary_file.csv')
+    df = pd.read_csv('temporary_file.csv')
+    
     df['date'] = pd.to_datetime(df['date'])
     df['date_added'] = today
 
@@ -89,19 +93,21 @@ def read_master_data(inventory_checked = True):
 @app.route('/upcoming_items')
 def get_upcoming_items():
     """Creates a schedule ahead of time."""
-    merged = inspect_inventory_log()
-    schedules = generate_upcoming_tasks(merged)
-    
-    return_values = []
-    for schedule in schedules:
-        title = schedule[0]
-        events = schedule[1]
-        for event in events:
-            item = dict()
-            item['title'] = title
-            item['date'] = event.strftime(format='%Y-%m-%d')
-            return_values.append(item)
-
+    try:
+        merged = inspect_inventory_log()
+        schedules = generate_upcoming_tasks(merged)
+        
+        return_values = []
+        for schedule in schedules:
+            title = schedule[0]
+            events = schedule[1]
+            for event in events:
+                item = dict()
+                item['title'] = title
+                item['date'] = event.strftime(format='%Y-%m-%d')
+                return_values.append(item)
+    except:
+        return_values = []
     return json.jsonify(return_values)
 
 
