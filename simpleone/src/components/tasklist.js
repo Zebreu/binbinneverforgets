@@ -1,5 +1,4 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import FreeformTable from './freeformtable';
 import OwnDataTable from './datatable';
 import { Checkbox } from '@material-ui/core';
 
@@ -11,45 +10,44 @@ export default function TaskList() {
         fetch('/get_tasks')
         .then(res => res.json())
         .then(data => {
-            console.log(data, 'data')
-            let rows = []
-            let dates = Object.keys(data)
-            console.log(dates, 'dates')
-            if (data) {
-                dates.forEach(date => {
+            // data looks like this: {'somedate': ['sometask', (...)], 'someotherdate': ['tasks', (...)]}
+            
+            // Define column
+            let column_def = {
+                field: 'item',
+                headerName: 'Items',
+                flex: 1,
+                renderCell: (params) => (
+                    (Date.parse(params.value) ? <strong>{(params.value)}</strong> : 
+                    <span><Checkbox></Checkbox>{(params.value)}</span>)
 
-                    console.log('entering, should push')
+                )
+            }
+            setColumns([column_def])
+            
+            // Figure out the rows
+            let rows = []
+            if (data) {
+                let dates = Object.keys(data)
+                dates.forEach(date => {
+                    // For each date, push the date row first
                     rows.push({id: rows.length, item: date})
+                    // Then push each item to check as the next row under the date
                     data[date].forEach(item_to_check => rows.push({id: rows.length, item: item_to_check}))
                 })
-                console.log(rows)
-                setTasks(rows);
-                let column_def = {
-                    field: 'item',
-                    headerName: 'Items',
-                    flex: 1,
-                    renderCell: (params) => (
-                        (Date.parse(params.value) ? <strong>{(params.value)}</strong> : 
-                        <span><Checkbox></Checkbox>{(params.value)}</span>)
-
-                    )
-                }
-                // setColumns([{ field: 'item', headerName: 'Items', flex: 1}])
-                setColumns([column_def])
+                setTasks(rows); // tasks looks like this [{id: 1, item: 'nameofthingtocheck'}, (...)]
+                
             }
 
         })
     }
-
+    
     useEffect(() => {
-        console.log('useEfdfssect')
         get_tasks();
     }, []);
 
     return (
         <Fragment> 
-            Tasks
-            {/* <FreeformTable rows={tasks} columns={columns} /> */}
             <OwnDataTable columns={columns} rows={tasks}/>
         </Fragment>
         

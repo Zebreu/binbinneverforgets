@@ -7,7 +7,7 @@ export default function OwnDataTable(props) {
     const [selection, setSelection] = useState([]);
 
     useEffect(() => {
-      console.log(props)
+      console.log(props, 'datatable, useeffect')
     })
 
     return (
@@ -21,7 +21,7 @@ export default function OwnDataTable(props) {
             }}
             />
             <Box pt={40.5} textAlign='left' pl={2}>
-            <Button variant='contained' color='primary' onClick={() => (alert(selection))}>Check</Button>
+              <Button variant='contained' color='primary' onClick={() => (alert(selection))}>Check</Button>
             </Box>
 
           
