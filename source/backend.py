@@ -70,18 +70,22 @@ def hello_world():
 @app.route('/search/<name>')
 def search_rx(name):
     """Queries the DB for the relevant rows, based on search bar"""
-    connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
-    inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
-    checks_count = len(inventory[inventory['item'] == name].index)
-    search_return_dict = {"checks_count": checks_count}
-    # What else should we return when someone asks for information about an item?
-    # TODO: Name, last_check, next_check, need_to_check?
-    search_return_dict = {"name": name}
-    last_checked = inventory[inventory['item'] == name]["date"].max()
-    search_return_dict = {"last_checked": last_checked}
-    merged = inspect_inventory_log()
-    need_to_check = merged[merged['item'] == name]['need_to_check']
-    search_return_dict = {"need_to_check", need_to_check}
+    try:
+        connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
+        inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
+        checks_count = len(inventory[inventory['item'] == name].index)
+        search_return_dict = {"checks_count": checks_count}
+        # What else should we return when someone asks for information about an item?
+        # TODO: Name, last_check, next_check, need_to_check?
+        search_return_dict["name"] = name
+        last_checked = inventory[inventory['item'] == name]["date"].max()
+        search_return_dict["last_checked"] = last_checked
+        merged = inspect_inventory_log()
+        need_to_check = merged[merged['item'] == name].iloc[0]['need_to_check'].astype(str)
+        search_return_dict["need_to_check"] = need_to_check
+        # Maybe also add the median time between checks
+    except:
+        search_return_dict = {}
     return json.jsonify(search_return_dict)
 
 
@@ -158,4 +162,6 @@ def update_inventory_log():
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0",debug=True,port=5000)
+    app.run(debug=True,port=4000)
+
+# http://127.0.0.1:4000/create_report
