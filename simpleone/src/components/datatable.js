@@ -1,4 +1,4 @@
-import React, {useState, useEffect, componentDidUpdate} from 'react';
+import React, {useState, useEffect } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { DataGrid } from '@material-ui/data-grid';
 
