@@ -1,4 +1,5 @@
 import React from 'react';
+import TextField from '@material-ui/core/TextField';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -21,8 +22,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
-import FreeformTable from '../components/freeformtable';
-import OwnDataTable from '../components/datatable';
+import Orders from './Orders';
 import MyCalendar from '../components/calendar';
 
 function Copyright() {
@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 240,
+    height: 700,
   },
 }));
 
@@ -174,24 +174,27 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
+          <Box pt= {1}>
+            <Grid container direction="row" justify="flex-end" xs={12} md={12} lg={12}>
+              <TextField id="search-bar-temp" label="Search" variant="outlined" />
+            </Grid>
+          </Box>
           <Box pt={4}>
             <Grid container spacing={3}>
-              <Grid item item xs={12} md={6} lg={8}>
+              <Grid item xs={12} sm={12} md={4} lg={3}>
                 <Paper className={fixedHeightPaper}>
                   <Box>
                     <Typography component="h1" variant="h3" color="secondary" noWrap className={classes.title}>
-                      Dans ta face, Gih.
+                      Tasklist here
                     </Typography>
                   </Box>
                 </Paper>
               </Grid>  
-              <Grid item xs={12} md={6} lg={4}>
+              <Grid item xs={12} sm={12} md={8} lg={9}>
                 <Paper className={fixedHeightPaper}>
-                  <Box>
-                    <Typography component="h1" variant="h3" color="primary" noWrap className={classes.title}>
-                      Merci, Zeb.
-                    </Typography>
-                  </Box>
+                  
+                  <MyCalendar></MyCalendar>
+                  
                 </Paper>
               </Grid> 
             </Grid>
@@ -209,21 +212,17 @@ export default function Dashboard() {
                 <Deposits />
               </Paper>
             </Grid>
-            {/* Freeform Table */}
+            {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <FreeformTable />
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <OwnDataTable />
+                <Orders />
               </Paper>
             </Grid>
           </Grid>
-          <Box pt={4}>
-          <MyCalendar></MyCalendar>        
-          </Box>
+          
+
+
+        
           <Box pt={4}>
             <Copyright />
           </Box>
