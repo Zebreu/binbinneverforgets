@@ -72,13 +72,14 @@ def search_rx(name):
     """Queries the DB for the relevant rows, based on search bar"""
     try:
         connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
-        inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
-        checks_count = len(inventory[inventory['item'] == name].index)
+        #inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
+        inventory = pd.read_sql('SELECT * FROM inventory_log WHERE item =:name',con = connection, params={"name": name}) 
+        checks_count = len(inventory)
         search_return_dict = {"checks_count": checks_count}
         # What else should we return when someone asks for information about an item?
         # TODO: Name, last_check, next_check, need_to_check?
         search_return_dict["name"] = name
-        last_checked = inventory[inventory['item'] == name]["date"].max()
+        last_checked = inventory["date"].max()
         search_return_dict["last_checked"] = last_checked
         merged = inspect_inventory_log()
         need_to_check = merged[merged['item'] == name].iloc[0]['need_to_check'].astype(str)
@@ -159,6 +160,15 @@ def update_inventory_log():
     df.to_sql('inventory_log', con=connection, if_exists='append', index=False)
 
     return f'Updated {len(items)} items'
+
+
+# @app.route('/day_log', methods=['POST'])
+# def day_log()
+#     """Gives you information about the day. If it's a day in the past, it shows you what has been checked and it can be undone. 
+#     If it's the in future, it will show what will need to be checked"""
+
+#     connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
+
 
 
 if __name__ == "__main__":
