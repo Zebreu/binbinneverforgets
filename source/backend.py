@@ -54,7 +54,7 @@ def inspect_inventory_log():
 
     master_data = pd.read_sql('SELECT * from master_data', con = connection)
     recent_master_data = master_data.sort_values('date_added').groupby('item').last().reset_index()
-    
+
     merged = recent_master_data.merge(last_checked, on='item', suffixes=('_initial','_checked'))
     merged['week_difference'] = (today - merged['date_checked']).dt.days/7
     merged['need_to_check'] = merged['week_difference'] > merged['frequency']
@@ -65,6 +65,29 @@ def inspect_inventory_log():
 @app.route('/')
 def hello_world():
     return render_template("index.html")
+
+
+@app.route('/search/<name>')
+def search_rx(name):
+    """Queries the DB for the relevant rows, based on search bar"""
+    try:
+        connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
+        inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
+        checks_count = len(inventory[inventory['item'] == name].index)
+        search_return_dict = {"checks_count": checks_count}
+        # What else should we return when someone asks for information about an item?
+        # TODO: Name, last_check, next_check, need_to_check?
+        search_return_dict["name"] = name
+        last_checked = inventory[inventory['item'] == name]["date"].max()
+        search_return_dict["last_checked"] = last_checked
+        merged = inspect_inventory_log()
+        need_to_check = merged[merged['item'] == name].iloc[0]['need_to_check'].astype(str)
+        search_return_dict["need_to_check"] = need_to_check
+        # Maybe also add the median time between checks
+    except:
+        search_return_dict = {}
+    return json.jsonify(search_return_dict)
+
 
 @app.route('/upload_master_data', methods=['POST'])
 def upload_master_data(inventory_checked=True):
@@ -139,4 +162,6 @@ def update_inventory_log():
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0",debug=True,port=5000)
+    app.run(debug=True,port=4000)
+
+# http://127.0.0.1:4000/create_report
