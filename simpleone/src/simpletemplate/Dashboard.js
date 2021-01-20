@@ -26,6 +26,7 @@ import Orders from './Orders';
 import MyCalendar from '../components/calendar';
 import TaskList from '../components/tasklist'
 import UploadButton from '../components/uploadbutton';
+import SearchBar from '../components/searchbar'
 
 function Copyright() {
   return (
@@ -161,7 +162,7 @@ export default function Dashboard() {
         <Container maxWidth="xl" className={classes.container}>
           <Box pt= {1}>
             <Grid container direction="row" justify="flex-end" xs={12} md={12} lg={12}>
-              <TextField id="search-bar-temp" label="Search" variant="outlined" />
+              <SearchBar></SearchBar>
             </Grid>
           </Box>
 
