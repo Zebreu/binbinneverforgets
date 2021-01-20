@@ -112,10 +112,7 @@ def upload_master_data(inventory_checked=True):
     
     return df.to_json(orient='split', index=False)
 
-
-@app.route('/upcoming_items')
-def get_upcoming_items():
-    """Creates a schedule ahead of time."""
+def gimme_schedules():
     try:
         merged = inspect_inventory_log()
         schedules = generate_upcoming_tasks(merged)
@@ -131,6 +128,15 @@ def get_upcoming_items():
                 return_values.append(item)
     except:
         return_values = []
+    
+    return return_values 
+
+
+
+@app.route('/upcoming_items')
+def get_upcoming_items():
+    """Creates a schedule ahead of time."""
+    return_values = gimme_schedules()
     return json.jsonify(return_values)
 
 
@@ -162,12 +168,27 @@ def update_inventory_log():
     return f'Updated {len(items)} items'
 
 
-# @app.route('/day_log', methods=['POST'])
-# def day_log()
-#     """Gives you information about the day. If it's a day in the past, it shows you what has been checked and it can be undone. 
-#     If it's the in future, it will show what will need to be checked"""
+@app.route('/day_log', methods=['GET'])
+def day_log():
+    """Gives you information about the day. If it's a day in the past, it shows you what has been checked and it can be undone. 
+    If it's the in future, it will show what will need to be checked"""
 
-#     connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
+    connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
+    date_click = pd.to_datetime("2021-02-27 00:00:00") #TODO Replace with calendar click input
+    today = pd.Timestamp.today()
+
+    if date_click >= today+pd.Timedelta(1, 'D'):
+        all_schedules = gimme_schedules()
+        today_schedule = []
+        for entry in all_schedules:
+            if entry['date'] == date_click.strftime(format='%Y-%m-%d'):
+                today_schedule.append(entry)
+        return json.jsonify(today_schedule)
+
+    else:
+        date_list = pd.read_sql('SELECT * FROM inventory_log WHERE date =:date',con=connection,params={"date": date_click.strftime(format='%Y-%m-%d %H:%M:%S')})
+        
+        return date_list.to_json(orient='split', index=False)
 
 
 
