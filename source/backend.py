@@ -125,7 +125,6 @@ def get_tasks():
     return json.jsonify(grouped_tasks)
 
 
-
 @app.route('/create_report')
 def create_report():
     """Creates a report of due checks."""
@@ -141,9 +140,8 @@ def create_report():
 def update_inventory_log():
     """Update the inventory log given a form with items and the time of their most recent check."""
     
-    items = request.form.getlist('items')
-    dates = request.form.getlist('dates')
-    
+    items = request.form.get('items').split(',')
+    dates = [pd.Timestamp.today()]*len(items)
     df = pd.DataFrame(columns=['date', 'item'])
     df['date'] = dates
     df['item'] = items
@@ -151,7 +149,7 @@ def update_inventory_log():
     connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
     df.to_sql('inventory_log', con=connection, if_exists='append', index=False)
 
-    return f'Updated {len(items)} items'
+    return json.jsonify(f'Updated {len(items)} items')
 
 
 if __name__ == "__main__":
