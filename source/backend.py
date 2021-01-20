@@ -1,13 +1,19 @@
 import sqlite3
 import os
+import hashlib
 
 import pandas as pd
-from flask import Flask, request, json, render_template, send_from_directory
+from flask import Flask, request, json, render_template, send_from_directory, abort, g
+from passlib.apps import custom_app_context as pwd_context
+from flask_httpauth import HTTPBasicAuth
+
+auth = HTTPBasicAuth()
 
 working_directory = os.path.dirname(__file__)
 
 app = Flask(__name__) 
 
+master_database = 'master.db'
 
 def create_heatmap(schedules):
     """Represents upcoming tasks as a calendar heatmap."""
@@ -42,11 +48,18 @@ def generate_upcoming_tasks(merged):
     return schedules
 
 
-def inspect_inventory_log():
+def get_user_database_name(username):
+    connection = sqlite3.connect(os.path.join(working_directory, master_database))
+    df = pd.read_sql('select database from user_to_database where username = :username', 
+        con = connection, params = {"username": username})
+    return df['database'].iloc[0]
+
+
+def inspect_inventory_log(username):
     """Gathers observations and master data."""
     today = pd.Timestamp.today()
-    
-    connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
+    user_database = get_user_database_name(username)
+    connection = sqlite3.connect(os.path.join(working_directory, user_database))
     checks = pd.read_sql('SELECT * from inventory_log', con = connection)
     checks['date'] = pd.to_datetime(checks['date'])
     checks = checks.sort_values('date')
@@ -62,16 +75,79 @@ def inspect_inventory_log():
     return merged 
 
 
+@auth.verify_password
+def verify_password(username, password):
+    connection = sqlite3.connect(os.path.join(working_directory, master_database))
+    users = pd.read_sql('select * from users', 
+        con = connection, 
+        params={"username": username})
+    
+    if len(users) == 0:
+        return False
+
+    encrypted_password = users['password'].iloc[0]
+    g.user = username
+    return pwd_context.verify(password, encrypted_password)
+
+
+def create_user(username, password):
+    """Creates a user in the database including its own set of tables."""
+    connection = sqlite3.connect(os.path.join(working_directory, master_database))
+    try:
+        existing_users = pd.read_sql('select * from users', con = connection)
+    except:
+        existing_users = []
+
+    current_id = len(existing_users) + 1 # we don't depend on id input anywhere so it's fine to not use better UUIDs
+
+    if len(existing_users) > 0:
+        if username in existing_users['username']:
+            return False
+
+    user = pd.DataFrame()   
+    user['username'] = [username]
+    user['password'] = [pwd_context.hash(password)] # encryption
+    user['active'] = [True]
+    user['id'] = [current_id]
+    user.to_sql('users', con = connection, if_exists='append')
+    
+    new_db = f'user{current_id}.db'
+    user_db_mapping = pd.DataFrame()
+    user_db_mapping['username'] = [username]
+    user_db_mapping['database'] = [new_db]
+    user_db_mapping.to_sql('user_to_database', con = connection, if_exists='append')
+
+
+@app.route('/route_ben_secrete_because_it_crashes')
+def crash_me():
+    a = 3442/0
+    return 'help'
+
+
 @app.route('/')
 def hello_world():
     return render_template("index.html")
 
 
+@app.route('/users/register', methods=['POST'])
+def register_user():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    if username is None or password is None:
+        abort(400)
+    
+    created = create_user(username, password)
+    
+    return json.jsonify({ 'username_created': created })
+    
+
 @app.route('/search/<name>')
+@auth.login_required
 def search_rx(name):
     """Queries the DB for the relevant rows, based on search bar"""
+    user_database = get_user_database_name(g.user)
     try:
-        connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
+        connection = sqlite3.connect(os.path.join(working_directory, user_database))
         inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
         checks_count = len(inventory[inventory['item'] == name].index)
         search_return_dict = {"checks_count": checks_count}
@@ -80,7 +156,7 @@ def search_rx(name):
         search_return_dict["name"] = name
         last_checked = inventory[inventory['item'] == name]["date"].max()
         search_return_dict["last_checked"] = last_checked
-        merged = inspect_inventory_log()
+        merged = inspect_inventory_log(username = g.user)
         need_to_check = merged[merged['item'] == name].iloc[0]['need_to_check'].astype(str)
         search_return_dict["need_to_check"] = need_to_check
         # Maybe also add the median time between checks
@@ -90,20 +166,25 @@ def search_rx(name):
 
 
 @app.route('/upload_master_data', methods=['POST'])
+@auth.login_required
 def upload_master_data(inventory_checked=True):
     """Updates a master table from an input file."""
     today = pd.Timestamp.today()
-
+    username = g.user
+    
     #df = pd.read_csv(os.path.join(working_directory, 'horaire_data.csv'))
     
     csv = request.files.get('file')
-    csv.save('temporary_file.csv')
-    df = pd.read_csv('temporary_file.csv')
+    filename = hashlib.md5(username.encode()).hexdigest()+'.csv'
+    csv.save(filename) # TODO avoid writing to disk
+    df = pd.read_csv(filename)
+    
     
     df['date'] = pd.to_datetime(df['date'])
     df['date_added'] = today
 
-    connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
+    user_database = get_user_database_name(username)
+    connection = sqlite3.connect(os.path.join(working_directory, user_database))
     df.to_sql('master_data', con=connection, if_exists='append', index=False)
     
     if inventory_checked:
@@ -113,10 +194,11 @@ def upload_master_data(inventory_checked=True):
 
 
 @app.route('/upcoming_items')
+@auth.login_required
 def get_upcoming_items():
     """Creates a schedule ahead of time."""
     try:
-        merged = inspect_inventory_log()
+        merged = inspect_inventory_log(username = g.user)
         schedules = generate_upcoming_tasks(merged)
         
         return_values = []
@@ -134,9 +216,10 @@ def get_upcoming_items():
 
 
 @app.route('/create_report')
+@auth.login_required
 def create_report():
     """Creates a report of due checks."""
-    merged = inspect_inventory_log()    
+    merged = inspect_inventory_log(username = g.user)    
     
     merged.insert(0, 'id', pd.RangeIndex(len(merged)))
     merged['need_to_check'] = merged['need_to_check'].astype(str)
@@ -145,6 +228,7 @@ def create_report():
 
 
 @app.route('/update_inventory_log', methods=['POST'])
+@auth.login_required
 def update_inventory_log():
     """Update the inventory log given a form with items and the time of their most recent check."""
     
@@ -155,7 +239,8 @@ def update_inventory_log():
     df['date'] = dates
     df['item'] = items
 
-    connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
+    user_database = get_user_database_name(username = g.user)
+    connection = sqlite3.connect(os.path.join(working_directory, user_database))
     df.to_sql('inventory_log', con=connection, if_exists='append', index=False)
 
     return f'Updated {len(items)} items'
