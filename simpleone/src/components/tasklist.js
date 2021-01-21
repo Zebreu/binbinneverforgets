@@ -55,7 +55,7 @@ export default function TaskList() {
                 <FormGroup>
                     {data[date].map((task) => 
                     (<FormControlLabel
-                        control={<Checkbox onChange={handleChange} name={task} />}
+                        control={<Checkbox checked={checked[task] || false} onChange={handleChange} name={task} />}
                         label={task} />
                         ))}
                 </FormGroup>
