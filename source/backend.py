@@ -5,13 +5,16 @@ import hashlib
 import pandas as pd
 from flask import Flask, request, json, render_template, send_from_directory, abort, g
 from passlib.apps import custom_app_context as pwd_context
-from flask_httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 
 auth = HTTPBasicAuth()
+tokenauth = HTTPTokenAuth()
 
 working_directory = os.path.dirname(__file__)
 
 app = Flask(__name__) 
+
+tokens = dict()
 
 master_database = 'master.db'
 
@@ -78,16 +81,29 @@ def inspect_inventory_log(username):
 @auth.verify_password
 def verify_password(username, password):
     connection = sqlite3.connect(os.path.join(working_directory, master_database))
-    users = pd.read_sql('select * from users', 
+    users = pd.read_sql('select * from users where username=:username', 
         con = connection, 
         params={"username": username})
     
     if len(users) == 0:
         return False
-
+    
     encrypted_password = users['password'].iloc[0]
     g.user = username
     return pwd_context.verify(password, encrypted_password)
+
+
+@tokenauth.verify_token
+def verify_token(token):
+    today = pd.Timestamp.today()
+    if token in tokens:
+        if tokens[token]['expiry'] > today:
+            g.user = tokens[token]['username']
+            return True
+        else:
+            tokens.pop(token, None)
+
+    return False    
 
 
 def create_user(username, password):
@@ -118,15 +134,20 @@ def create_user(username, password):
     user_db_mapping.to_sql('user_to_database', con = connection, if_exists='append')
 
 
-@app.route('/route_ben_secrete_because_it_crashes')
-def crash_me():
-    a = 3442/0
-    return 'help'
-
-
 @app.route('/')
 def hello_world():
     return render_template("index.html")
+
+
+@app.route('/users/login', methods=['GET'])
+@auth.login_required
+def login_user():
+    today = pd.Timestamp.today()
+    expiry = today + pd.Timedelta(11, 'H')
+    token_string = hashlib.sha256((g.user+str(today)).encode()).hexdigest()
+    token = {'username': g.user, 'expiry': expiry}
+    tokens[token_string] = token
+    return json.jsonify({'token_created': token_string})
 
 
 @app.route('/users/register', methods=['POST'])
@@ -137,12 +158,11 @@ def register_user():
         abort(400)
     
     created = create_user(username, password)
-    
     return json.jsonify({ 'username_created': created })
     
 
 @app.route('/search/<name>')
-@auth.login_required
+@tokenauth.login_required
 def search_rx(name):
     """Queries the DB for the relevant rows, based on search bar"""
     user_database = get_user_database_name(g.user)
@@ -166,7 +186,7 @@ def search_rx(name):
 
 
 @app.route('/upload_master_data', methods=['POST'])
-@auth.login_required
+@tokenauth.login_required
 def upload_master_data(inventory_checked=True):
     """Updates a master table from an input file."""
     today = pd.Timestamp.today()
@@ -194,7 +214,7 @@ def upload_master_data(inventory_checked=True):
 
 
 @app.route('/upcoming_items')
-@auth.login_required
+@tokenauth.login_required
 def get_upcoming_items():
     """Creates a schedule ahead of time."""
     try:
@@ -216,19 +236,19 @@ def get_upcoming_items():
 
 
 @app.route('/create_report')
-@auth.login_required
+@tokenauth.login_required
 def create_report():
     """Creates a report of due checks."""
     merged = inspect_inventory_log(username = g.user)    
     
     merged.insert(0, 'id', pd.RangeIndex(len(merged)))
-    merged['need_to_check'] = merged['need_to_check'].astype(str)
+    merged['need_t o_check'] = merged['need_to_check'].astype(str)
 
     return merged.to_json(orient='split', index=False)
 
 
 @app.route('/update_inventory_log', methods=['POST'])
-@auth.login_required
+@tokenauth.login_required
 def update_inventory_log():
     """Update the inventory log given a form with items and the time of their most recent check."""
     
