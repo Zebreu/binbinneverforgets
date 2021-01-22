@@ -34,7 +34,7 @@ def generate_upcoming_tasks(merged):
     today = pd.Timestamp.today()
 
     schedules = []
-    for i, row in merged.iterrows():
+    for _, row in merged.iterrows():
         schedule = pd.date_range(row['date_checked'], today+pd.Timedelta(13, 'W'), freq=f'{row["frequency"]*7}D')
         schedule = schedule[schedule >= today]
         schedules.append((row['item'],schedule))
@@ -73,7 +73,8 @@ def search_rx(name):
     try:
         connection = sqlite3.connect(os.path.join(working_directory, 'database.db'))
         #inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
-        inventory = pd.read_sql('SELECT * FROM inventory_log WHERE item =:name',con = connection, params={"name": name}) 
+        low_name = name.lower()
+        inventory = pd.read_sql('SELECT * FROM inventory_log WHERE lower(item) =:name', con = connection, params={"name": low_name})
         checks_count = len(inventory)
         search_return_dict = {"checks_count": checks_count}
         # What else should we return when someone asks for information about an item?
@@ -82,7 +83,7 @@ def search_rx(name):
         last_checked = inventory["date"].max()
         search_return_dict["last_checked"] = last_checked
         merged = inspect_inventory_log()
-        need_to_check = merged[merged['item'] == name].iloc[0]['need_to_check'].astype(str)
+        need_to_check = merged[merged['item'].str.lower() == low_name].iloc[0]['need_to_check'].astype(str)
         search_return_dict["need_to_check"] = need_to_check
         # Maybe also add the median time between checks
     except:
