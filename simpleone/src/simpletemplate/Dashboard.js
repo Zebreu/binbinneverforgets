@@ -19,13 +19,10 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
-import Chart from './Chart';
-import Deposits from './Deposits';
-import Orders from './Orders';
 import MyCalendar from '../components/calendar';
 import UploadButton from '../components/uploadbutton';
 import SearchBar from '../components/searchbar'
+import Login from '../components/login'
 
 function Copyright() {
   return (
@@ -149,6 +146,7 @@ export default function Dashboard() {
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             Dashboard
           </Typography>
+          
           <IconButton color="inherit">
             <Badge badgeContent={0} color="secondary">
               <NotificationsIcon />
@@ -159,9 +157,10 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="xl" className={classes.container}>
+        <Login>Login</Login>
           <Box pt= {1}>
             <Grid container direction="row" justify="flex-end" xs={12} md={12} lg={12}>
-              <SearchBar></SearchBar>
+            <SearchBar></SearchBar>
             </Grid>
           </Box>
 

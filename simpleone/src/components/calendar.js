@@ -11,7 +11,8 @@ function MyCalendar (props) {
     const style = {backgroudColor: 'white'}      
 
     function get_events() {
-        fetch('/upcoming_items')
+        fetch('/upcoming_items', { headers : 
+            new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})})
         .then(res => res.json())
         .then(data => {setEvents(data);});
     };

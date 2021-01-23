@@ -132,6 +132,8 @@ def create_user(username, password):
     user_db_mapping['username'] = [username]
     user_db_mapping['database'] = [new_db]
     user_db_mapping.to_sql('user_to_database', con = connection, if_exists='append')
+    
+    return True 
 
 
 @app.route('/')
@@ -152,8 +154,9 @@ def login_user():
 
 @app.route('/users/register', methods=['POST'])
 def register_user():
-    username = request.json.get('username')
-    password = request.json.get('password')
+    print(request)
+    username = request.form.get('username')
+    password = request.form.get('password')
     if username is None or password is None:
         abort(400)
     
