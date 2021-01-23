@@ -245,7 +245,7 @@ def create_report():
     merged = inspect_inventory_log(username = g.user)    
     
     merged.insert(0, 'id', pd.RangeIndex(len(merged)))
-    merged['need_t o_check'] = merged['need_to_check'].astype(str)
+    merged['need_to_check'] = merged['need_to_check'].astype(str)
 
     return merged.to_json(orient='split', index=False)
 
