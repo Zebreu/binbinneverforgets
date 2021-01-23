@@ -24,12 +24,14 @@ import UploadButton from '../components/uploadbutton';
 import SearchBar from '../components/searchbar'
 import Login from '../components/login'
 
+document.title = 'Reminder';
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+        Binbin never forgets
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -144,7 +146,7 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Dashboard
+            Remember all the things
           </Typography>
           
           <IconButton color="inherit">
