@@ -122,7 +122,7 @@ def create_user(username, password):
     current_id = len(existing_users) + 1 # we don't depend on id input anywhere so it's fine to not use better UUIDs
 
     if len(existing_users) > 0:
-        if username in existing_users['username']:
+        if username in set(existing_users['username']):
             return False
 
     user = pd.DataFrame()   
