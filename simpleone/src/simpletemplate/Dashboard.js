@@ -151,8 +151,8 @@ export default function Dashboard() {
 
           <Box pt={4}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={12} md={4} lg={3}>
-                <Paper className={fixedHeightPaper}>                  
+              <Grid item xs={12} sm={12} md={4} lg={3} >
+                <Paper className={fixedHeightPaper} >                  
                       <TaskList />
                 </Paper>
               </Grid>  

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Checkbox, FormControl, FormGroup, FormControlLabel, FormLabel, Button } from '@material-ui/core';
+import { Grid, Checkbox, FormControl, FormGroup, FormControlLabel, FormLabel, Button } from '@material-ui/core';
 import moment from 'moment';
 
 export default function TaskList() {
@@ -83,7 +83,9 @@ export default function TaskList() {
 
     return (
         <div>
-            {<Button onClick={buttonClick} variant="contained" color='primary'>Submit</Button>}
+            <Grid container direction='row' justify='flex-end'>
+            <Grid item>{<Button onClick={buttonClick} variant="contained" color='primary'>Submit</Button>}</Grid>
+            </Grid>
             {data && Object.keys(data).map((date) =>
             (<div key={date}><FormLabel>{date}</FormLabel>
                     <FormGroup >
