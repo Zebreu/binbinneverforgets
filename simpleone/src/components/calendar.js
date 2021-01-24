@@ -27,6 +27,7 @@ function MyCalendar (props) {
             weekends={true}
             events={events}
             dateClick={handleDateClick}
+            height={700}
         />
         </div>
     );

@@ -37,7 +37,7 @@ def create_heatmap(schedules):
     return resampled
 
 
-def generate_upcoming_tasks(merged):
+def generate_upcoming_tasks(merged, exclude_past=True):
     """Generates upcoming tasks given information about last checked dates and master data."""
     
     today = pd.Timestamp.today()
@@ -45,8 +45,12 @@ def generate_upcoming_tasks(merged):
     schedules = []
     for i, row in merged.iterrows():
         schedule = pd.date_range(row['date_checked'], today+pd.Timedelta(13, 'W'), freq=f'{row["frequency"]*7}D')
-        schedule = schedule[schedule >= today]
-        schedules.append((row['item'],schedule))
+        schedule = schedule[1:]
+        if len(schedule) == 0:
+            continue
+        if exclude_past:
+            schedule = schedule[schedule >= today]
+        schedules.append((row['item'], schedule))
 
     return schedules
 
@@ -238,6 +242,30 @@ def get_upcoming_items():
     return json.jsonify(return_values)
 
 
+@app.route('/get_tasks')
+def get_tasks():
+    merged = inspect_inventory_log()
+    schedules = generate_upcoming_tasks(merged, exclude_past=False)
+    today = pd.Timestamp.today()
+    grouped_tasks = dict()
+    schedules = sorted(schedules, key=lambda x: x[1][0])
+    for schedule in schedules:
+        title = schedule[0]
+        check_date = schedule[1][0]
+        if check_date < today:
+            check_date = "Past due"
+        elif check_date == today:
+            check_date = "Today"
+        elif check_date.week == today.week:
+            check_date = 'This week'
+        elif check_date.week == (today+pd.Timedelta(1, 'W')).week:
+            check_date = 'Next week'
+        else:
+            continue
+        grouped_tasks.setdefault(check_date, []).append(title)
+    return json.jsonify(grouped_tasks)
+
+
 @app.route('/create_report')
 @tokenauth.login_required
 def create_report():
@@ -255,9 +283,8 @@ def create_report():
 def update_inventory_log():
     """Update the inventory log given a form with items and the time of their most recent check."""
     
-    items = request.form.getlist('items')
-    dates = request.form.getlist('dates')
-    
+    items = request.form.get('items').split(',')
+    dates = [pd.Timestamp.today()]*len(items)
     df = pd.DataFrame(columns=['date', 'item'])
     df['date'] = dates
     df['item'] = items
@@ -266,7 +293,7 @@ def update_inventory_log():
     connection = sqlite3.connect(os.path.join(working_directory, user_database))
     df.to_sql('inventory_log', con=connection, if_exists='append', index=False)
 
-    return f'Updated {len(items)} items'
+    return json.jsonify(f'Updated {len(items)} items')
 
 
 if __name__ == "__main__":
