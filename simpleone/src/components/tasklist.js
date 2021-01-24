@@ -83,6 +83,7 @@ export default function TaskList() {
 
     return (
         <div>
+            {<Button onClick={buttonClick} variant="contained" color='primary'>Submit</Button>}
             {data && Object.keys(data).map((date) =>
             (<div key={date}><FormLabel>{date}</FormLabel>
                     <FormGroup >
@@ -93,7 +94,7 @@ export default function TaskList() {
                         ))}
                     </FormGroup>
             </div>))}
-            {<Button onClick={buttonClick} variant="contained" color='primary'>Submit</Button>}
+            
              
         </div>
     )

@@ -100,6 +100,7 @@ def verify_password(username, password):
 @tokenauth.verify_token
 def verify_token(token):
     today = pd.Timestamp.today()
+
     if token in tokens:
         if tokens[token]['expiry'] > today:
             g.user = tokens[token]['username']
@@ -149,6 +150,11 @@ def hello_world():
 @auth.login_required
 def login_user():
     today = pd.Timestamp.today()
+
+    for token in tokens:
+        if tokens[token]['expiry'] < today:
+            tokens.pop(token, None)
+
     expiry = today + pd.Timedelta(11, 'H')
     token_string = hashlib.sha256((g.user+str(today)).encode()).hexdigest()
     token = {'username': g.user, 'expiry': expiry}
@@ -245,25 +251,29 @@ def get_upcoming_items():
 @app.route('/get_tasks')
 @tokenauth.login_required
 def get_tasks():
-    merged = inspect_inventory_log(username = g.user)
-    schedules = generate_upcoming_tasks(merged, exclude_past=False)
-    today = pd.Timestamp.today()
-    grouped_tasks = dict()
-    schedules = sorted(schedules, key=lambda x: x[1][0])
-    for schedule in schedules:
-        title = schedule[0]
-        check_date = schedule[1][0]
-        if check_date < today:
-            check_date = "Past due"
-        elif check_date == today:
-            check_date = "Today"
-        elif check_date.week == today.week:
-            check_date = 'This week'
-        elif check_date.week == (today+pd.Timedelta(1, 'W')).week:
-            check_date = 'Next week'
-        else:
-            continue
-        grouped_tasks.setdefault(check_date, []).append(title)
+    try:
+        merged = inspect_inventory_log(username = g.user)
+        schedules = generate_upcoming_tasks(merged, exclude_past=False)
+        today = pd.Timestamp.today()
+        grouped_tasks = dict()
+        schedules = sorted(schedules, key=lambda x: x[1][0])
+        for schedule in schedules:
+            title = schedule[0]
+            check_date = schedule[1][0]
+            if check_date < today:
+                check_date = "Past due"
+            elif check_date == today:
+                check_date = "Today"
+            elif check_date.week == today.week:
+                check_date = 'This week'
+            elif check_date.week == (today+pd.Timedelta(1, 'W')).week:
+                check_date = 'Next week'
+            else:
+                continue
+            grouped_tasks.setdefault(check_date, []).append(title)
+    except:
+        grouped_tasks = dict()
+
     return json.jsonify(grouped_tasks)
 
 
@@ -298,6 +308,4 @@ def update_inventory_log():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,port=4000)
-
-# http://127.0.0.1:4000/create_report
+    app.run(debug = True, port = 4000)

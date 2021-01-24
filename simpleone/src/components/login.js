@@ -76,7 +76,7 @@ export default function Login () {
           <form>
             <DialogContent>
             <DialogContentText>
-                Please enter your username and password to login. You will need to sign in after you first sign up.
+                Please enter your username and password. You will need to re-enter credentials to log in after you first sign up.
             </DialogContentText>
             <TextField
                 autoFocus

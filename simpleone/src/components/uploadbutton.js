@@ -12,9 +12,11 @@ export default function UploadButton() {
         formData.append("file", files[0])
         fetch('/upload_master_data', {
             method: "POST",  
-            body: formData})
+            body: formData,
+            headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})
+        })
         .then(res => res.json())
-        .then(data => {console.log(data);});
+        .then(data => {window.location.reload(true);});
     };
 
 
