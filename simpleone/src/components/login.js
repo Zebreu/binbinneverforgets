@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogActions from '@material-ui/core/DialogActions'
 import Button from '@material-ui/core/Button';
-import SelectInput from '@material-ui/core/Select/SelectInput';
 
 export default function Login () {
-    const [results, setResults] = useState({});
     const [opened, setOpened] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -21,8 +19,17 @@ export default function Login () {
         setOpened(true);
     }
 
+    function onLogout() {
+        window.localStorage['usertoken'] = '';
+        window.localStorage['username'] = 'No user';
+        setOpened(false);
+        window.location.reload(true);
+    }
+
     function storeToken(token) {
         window.localStorage['usertoken'] = token['token_created'];
+        window.localStorage['username'] = token['username'];
+
         setUsername('');
         setPassword('');
         setOpened(false);
@@ -59,7 +66,7 @@ export default function Login () {
     return (
         <div>
         <Button variant="outlined" color="primary" onClick={handleOpen}>
-        Login
+        {window.localStorage['username']} - Login/Logout
         </Button>
        
         <Dialog
@@ -95,11 +102,14 @@ export default function Login () {
                 <Button onClick={handleClose} color="primary">
                     Cancel
                 </Button>
+                <Button onClick={onLogout} color="primary"> 
+                    Log out
+                </Button>
                 <Button onClick={onRegister} color="primary"> 
                     Sign up
                 </Button>
                 <Button onClick={onLogin} color="primary"> 
-                    Sign in
+                    Log in
                 </Button>
             </DialogActions>
           </form>

@@ -153,7 +153,7 @@ def login_user():
     token_string = hashlib.sha256((g.user+str(today)).encode()).hexdigest()
     token = {'username': g.user, 'expiry': expiry}
     tokens[token_string] = token
-    return json.jsonify({'token_created': token_string})
+    return json.jsonify({'token_created': token_string, 'username': g.user})
 
 
 @app.route('/users/register', methods=['POST'])

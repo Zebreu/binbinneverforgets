@@ -6,18 +6,29 @@ export default function TaskList() {
     const [checked, setChecked] = useState({});
     const [data, setData] = useState();
 
+
+
     function get_tasks() {
-        fetch('/get_tasks')
+        fetch('/get_tasks', { headers : 
+            new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})})
             .then(res => res.json())
             .then(data => {
                 var orderedDates = {};
-                if (data['Past Due']) {
-                    orderedDates['Past Due'] = data['Past Due']
+                if (data['Past due']) {
+                    orderedDates['Past due'] = data['Past due']
                 }
                 if (data['Today']) {
                     orderedDates['Today'] = data['Today']
                 }
                 
+                if (data['This week']) {
+                    orderedDates['This week'] = data['This week']
+                }
+
+                if (data['Next week']) {
+                    orderedDates['Next week'] = data['Next week']
+                }
+
                 Object.keys(data).sort(function (a, b) {
                     return moment(a, 'dddd, MMMM D').toDate() - moment(b, 'dddd, MMMM D').toDate();
                 }).forEach(function (key) {
@@ -55,7 +66,8 @@ export default function TaskList() {
         formData.append("items", Object.keys(checked).filter(item => checked[item]))
         fetch('/update_inventory_log', {
             method: "POST",
-            body: formData
+            body: formData,
+            headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})
         })
             .then(res => res.json())
             .then(data => {
