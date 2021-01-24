@@ -243,8 +243,9 @@ def get_upcoming_items():
 
 
 @app.route('/get_tasks')
+@tokenauth.login_required
 def get_tasks():
-    merged = inspect_inventory_log()
+    merged = inspect_inventory_log(username = g.user)
     schedules = generate_upcoming_tasks(merged, exclude_past=False)
     today = pd.Timestamp.today()
     grouped_tasks = dict()
