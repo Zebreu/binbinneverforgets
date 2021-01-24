@@ -45,6 +45,11 @@ export default function TaskList() {
         console.log(checked)
     }
 
+    function submitCompletedTasks() {
+        //get_tasks(); // Swap with the line below if we're going to manage state better
+        window.location.reload(true);
+    }
+
     function buttonClick() {
         const formData = new FormData();
         formData.append("items", Object.keys(checked).filter(item => checked[item]))
@@ -54,8 +59,7 @@ export default function TaskList() {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
-                get_tasks()
+                submitCompletedTasks();
             });
     }
 
@@ -63,27 +67,22 @@ export default function TaskList() {
         get_tasks();
     }, []);
 
+    
+
     return (
         <div>
             {data && Object.keys(data).map((date) =>
-            (<span>
-                <FormControl component='fieldset'>
-                    <FormLabel component='legend'>{date}</FormLabel>
-                    <FormGroup>
+            (<div><FormLabel>{date}</FormLabel>
+                    <FormGroup >
                         {data[date].map((task) =>
-                        (<FormControlLabel
+                        (<FormControlLabel 
                             control={<Checkbox checked={checked[task] || false} onChange={handleChange} name={task} />}
                             label={task} />
                         ))}
                     </FormGroup>
-                </FormControl>
-                <br />
-            </span>))}
-            <FormGroup>
-                <FormControlLabel
-                    control={<Button onClick={buttonClick} variant="contained" color="primary">Submit</Button>}
-                />
-            </FormGroup>
+            </div>))}
+            {<Button onClick={buttonClick} variant="contained" color='primary'>Submit</Button>}
+             
         </div>
     )
 }

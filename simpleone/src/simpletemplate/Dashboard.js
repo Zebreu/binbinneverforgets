@@ -176,12 +176,10 @@ export default function Dashboard() {
             <Grid container spacing={3}>
               <Grid item xs={12} sm={12} md={4} lg={3}>
                 <Paper className={fixedHeightPaper}>
-                  <Box>
-                    <Typography component="h1" variant="h3" color="secondary" noWrap className={classes.title}>
-                      Tasklist here
+                  
                       <TaskList />
-                    </Typography>
-                  </Box>
+                    
+                  
                 </Paper>
               </Grid>  
               <Grid item xs={12} sm={12} md={8} lg={9}>

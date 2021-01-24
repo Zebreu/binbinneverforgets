@@ -151,9 +151,12 @@ def get_tasks():
             check_date = "Past Due"
         elif check_date == today:
             check_date = "Today"
+        elif check_date.week == today.week:
+            check_date = 'This week'
+        elif check_date.week == (today+pd.Timedelta(1, 'W')).week:
+            check_date = 'Next week'
         else:
-            check_date = check_date.strftime(format="%A, %B %-d")
-
+            continue
         grouped_tasks.setdefault(check_date, []).append(title)
     return json.jsonify(grouped_tasks)
 
