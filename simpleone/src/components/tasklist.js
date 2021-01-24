@@ -72,10 +72,10 @@ export default function TaskList() {
     return (
         <div>
             {data && Object.keys(data).map((date) =>
-            (<div><FormLabel>{date}</FormLabel>
+            (<div key={date}><FormLabel>{date}</FormLabel>
                     <FormGroup >
                         {data[date].map((task) =>
-                        (<FormControlLabel 
+                        (<FormControlLabel key={task}
                             control={<Checkbox checked={checked[task] || false} onChange={handleChange} name={task} />}
                             label={task} />
                         ))}

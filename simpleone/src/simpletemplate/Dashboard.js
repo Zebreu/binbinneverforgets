@@ -134,13 +134,13 @@ export default function Dashboard() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="xl" className={classes.container}>
           <Box pt= {1}>
-            <Grid container direction="row" justify="flex-end" xs={12} md={12} lg={12}>
+            <Grid container direction="row" justify="flex-end">
               <SearchBar></SearchBar>
             </Grid>
           </Box>
 
           <Box pt={1}>
-            <Grid container direction="row" justify="flex-start" xs={12} md={12} lg={12}>
+            <Grid container direction="row" justify="flex-start">
               <UploadButton />
             </Grid>
           </Box>
