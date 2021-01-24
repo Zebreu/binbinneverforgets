@@ -148,7 +148,7 @@ def get_tasks():
         title = schedule[0]
         check_date = schedule[1][0]
         if check_date < today:
-            check_date = "Past Due"
+            check_date = "Past due"
         elif check_date == today:
             check_date = "Today"
         elif check_date.week == today.week:
