@@ -9,9 +9,9 @@ import Button from '@material-ui/core/Button';
 export default function AddItem() {
 
     const [opened, setOpened] = useState(false);
-    const [date, setDate] = useState('');
-    const [name, setName] = useState('');
-    const [frequency, setFrequency] = useState('');
+    const [date, setDate] = useState("2021-01-25");
+    const [name, setName] = useState("");
+    const [frequency, setFrequency] = useState("");
 
     function handleClose() {
         setOpened(false);
@@ -33,6 +33,7 @@ export default function AddItem() {
 
     function uploadItem() {
         const formData = new FormData();
+        console.log(date);
         formData.set("date", date);
         formData.set("name", name);
         formData.set("frequency", frequency);
@@ -89,7 +90,6 @@ export default function AddItem() {
                 margin="dense"
                 id="frequency"
                 label="Allowed time between checks"
-                defaultValue="4"
                 fullWidth
                 size = "small"
                 onChange = {(e) => setFrequency(e.target.value)}
