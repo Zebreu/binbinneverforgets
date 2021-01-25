@@ -6,6 +6,15 @@ export default function UploadButton() {
 
     const [open, setOpen] = useState(false);
 
+    function handleResponse(data) {
+        if (data.status == '401') {
+            alert('Please login before using the tool');
+            window.localStorage['username'] = 'No user';
+        } else {
+            window.location.reload(true);
+        }
+    }
+
 
     function uploadFile(files) {
         const formData = new FormData();
@@ -15,15 +24,14 @@ export default function UploadButton() {
             body: formData,
             headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})
         })
-        .then(res => res.json())
-        .then(data => {window.location.reload(true);});
+        .then(data => {handleResponse(data);});
     };
 
 
     return (
         <div>
         <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-            Add data file
+            Upload data file
         </Button>
 
         <DropzoneDialog

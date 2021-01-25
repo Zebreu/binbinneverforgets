@@ -11,6 +11,14 @@ export default function Login () {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    
+    if (window.localStorage['userexpiry'] == null || parseInt(window.localStorage['userexpiry']) < Date.now()) {
+        window.localStorage['userexpiry'] = null;
+        window.localStorage['username'] = 'No user';
+        window.localStorage['usertoken'] = null;
+    } 
+    
+
     function handleClose() {
         setOpened(false);
     }
@@ -28,7 +36,10 @@ export default function Login () {
 
     function storeToken(token) {
         window.localStorage['usertoken'] = token['token_created'];
+        window.localStorage['userexpiry'] = token['token_expiry'];
         window.localStorage['username'] = token['username'];
+        
+        console.log(window.localStorage);
 
         setUsername('');
         setPassword('');

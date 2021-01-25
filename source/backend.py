@@ -1,3 +1,4 @@
+import time
 import sqlite3
 import os
 import hashlib
@@ -150,16 +151,19 @@ def hello_world():
 @auth.login_required
 def login_user():
     today = pd.Timestamp.today()
-
-    for token in tokens:
+    
+    current_tokens = list(tokens.keys())
+    for token in current_tokens:
         if tokens[token]['expiry'] < today:
             tokens.pop(token, None)
 
     expiry = today + pd.Timedelta(11, 'H')
+    frontend_expiry = int((time.time() + (60*60*11)) * 1000)
     token_string = hashlib.sha256((g.user+str(today)).encode()).hexdigest()
     token = {'username': g.user, 'expiry': expiry}
+    print(token)
     tokens[token_string] = token
-    return json.jsonify({'token_created': token_string, 'username': g.user})
+    return json.jsonify({'token_created': token_string, 'username': g.user, 'token_expiry': frontend_expiry})
 
 
 @app.route('/users/register', methods=['POST'])
@@ -197,6 +201,28 @@ def search_rx(name):
         search_return_dict = {}
     return json.jsonify(search_return_dict)
 
+
+@app.route('/add_item', methods=['POST'])
+@tokenauth.login_required
+def add_item(inventory_checked=True):
+    today = pd.Timestamp.today()
+    username = g.user
+    
+    
+    df = pd.DataFrame()
+    df['item'] = [request.form.get('name')]
+    df['date'] = pd.to_datetime([request.form.get('date')])
+    df['frequency'] = [int(request.form.get('frequency'))]
+    df['date_added'] = [today]
+    print(df)
+    user_database = get_user_database_name(username)
+    connection = sqlite3.connect(os.path.join(working_directory, user_database))
+    df.to_sql('master_data', con=connection, if_exists='append', index=False)
+    
+    if inventory_checked:
+        df[['date', 'item']].to_sql('inventory_log', con=connection, if_exists='append', index=False)
+    
+    return df.to_json(orient='split', index=False)
 
 @app.route('/upload_master_data', methods=['POST'])
 @tokenauth.login_required

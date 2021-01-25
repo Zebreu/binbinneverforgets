@@ -15,6 +15,7 @@ import TaskList from '../components/tasklist'
 import UploadButton from '../components/uploadbutton';
 import SearchBar from '../components/searchbar'
 import Login from '../components/login'
+import AddItem from '../components/additem'
 
 document.title = 'Reminder';
 
@@ -144,8 +145,9 @@ export default function Dashboard() {
           </Box>
 
           <Box pt={1}>
-            <Grid container direction="row" justify="flex-start">
-              <UploadButton />
+            <Grid container spacing={1} direction="row" justify="flex-start">
+              <Grid item> <UploadButton /></Grid>
+              <Grid item><AddItem/></Grid>
             </Grid>
           </Box>
 

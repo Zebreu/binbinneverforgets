@@ -24,6 +24,7 @@ function MyCalendar (props) {
         <FullCalendar
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"
+            firstDay="1"
             weekends={true}
             events={events}
             dateClick={handleDateClick}
