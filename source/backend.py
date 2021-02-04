@@ -168,26 +168,28 @@ def update_inventory_log():
     return f'Updated {len(items)} items'
 
 
-@app.route('/day_log', methods=['GET'])
-def day_log():
+@app.route('/day_log/<date>', methods=['GET'])
+def day_log(date):
     """Gives you information about the day. If it's a day in the past, it shows you what has been checked and it can be undone. 
     If it's the in future, it will show what will need to be checked"""
 
     connection = sqlite3.connect(os.path.join(working_directory,'database.db'))
-    date_click = pd.to_datetime("2021-02-27 00:00:00") #TODO Replace with calendar click input
+    date_click = pd.to_datetime(date)
     today = pd.Timestamp.today()
 
-    if date_click >= today+pd.Timedelta(1, 'D'):
+    if date_click >= today:
         all_schedules = gimme_schedules()
         today_schedule = []
         for entry in all_schedules:
             if entry['date'] == date_click.strftime(format='%Y-%m-%d'):
                 today_schedule.append(entry)
+        print(today_schedule)
         return json.jsonify(today_schedule)
+        
 
     else:
         date_list = pd.read_sql('SELECT * FROM inventory_log WHERE date =:date',con=connection,params={"date": date_click.strftime(format='%Y-%m-%d %H:%M:%S')})
-        
+        print(date_list)
         return date_list.to_json(orient='split', index=False)
 
 
