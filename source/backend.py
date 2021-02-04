@@ -192,7 +192,7 @@ def search_rx(name):
         # What else should we return when someone asks for information about an item?
         # TODO: Name, last_check, next_check, need_to_check?
         search_return_dict["name"] = name
-        last_checked = inventory["date"].max()
+        last_checked = inventory[inventory['item'] == name]["date"].max()
         search_return_dict["last_checked"] = last_checked
         merged = inspect_inventory_log(username = g.user)
         need_to_check = merged[merged['item'] == name].iloc[0]['need_to_check'].astype(str)
@@ -307,12 +307,6 @@ def get_all_events():
     return json.jsonify(return_values)
 
 
-
-@app.route('/upcoming_items')
-def get_upcoming_items():
-    """Creates a schedule ahead of time."""
-    return_values = gimme_schedules()
-    return json.jsonify(return_values)
 
 
 @app.route('/get_tasks')
