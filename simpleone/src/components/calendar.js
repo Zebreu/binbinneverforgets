@@ -11,9 +11,10 @@ function MyCalendar (props) {
     const style = {backgroudColor: 'white'}      
 
     function get_events() {
-        fetch('/upcoming_items')
+        fetch('/all_events', { headers : 
+            new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})})
         .then(res => res.json())
-        .then(data => {setEvents(data);});
+        .then(data => {setEvents(data);console.log(data)});
     };
 
     useEffect(get_events, []);
@@ -23,6 +24,7 @@ function MyCalendar (props) {
         <FullCalendar
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"
+            firstDay="1"
             weekends={true}
             events={events}
             dateClick={handleDateClick}

@@ -10,7 +10,7 @@ RUN bash Miniconda3-py37_4.8.3-Linux-x86_64.sh -b
 
 RUN /root/miniconda3/bin/pip install pandas
 
-RUN /root/miniconda3/bin/pip install flask
+RUN /root/miniconda3/bin/pip install flask passlib flask_httpauth
 
 COPY source source
 

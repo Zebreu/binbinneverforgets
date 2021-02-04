@@ -14,13 +14,17 @@ import MyCalendar from '../components/calendar';
 import TaskList from '../components/tasklist'
 import UploadButton from '../components/uploadbutton';
 import SearchBar from '../components/searchbar'
+import Login from '../components/login'
+import AddItem from '../components/additem'
+
+document.title = 'Reminder';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+        Binbin never forgets
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -126,13 +130,14 @@ export default function Dashboard() {
       <AppBar position="absolute" className={clsx(classes.appBar, open)}>
         <Toolbar className={classes.toolbar}>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Dashboard
+            Remember all the things
           </Typography>
         </Toolbar>
       </AppBar>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="xl" className={classes.container}>
+        <Login>Login</Login>
           <Box pt= {1}>
             <Grid container direction="row" justify="flex-end">
               <SearchBar></SearchBar>
@@ -140,15 +145,16 @@ export default function Dashboard() {
           </Box>
 
           <Box pt={1}>
-            <Grid container direction="row" justify="flex-start">
-              <UploadButton />
+            <Grid container spacing={1} direction="row" justify="flex-start">
+              <Grid item> <UploadButton /></Grid>
+              <Grid item><AddItem/></Grid>
             </Grid>
           </Box>
 
           <Box pt={4}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={12} md={4} lg={3}>
-                <Paper className={fixedHeightPaper}>                  
+              <Grid item xs={12} sm={12} md={4} lg={3} >
+                <Paper className={fixedHeightPaper} >                  
                       <TaskList />
                 </Paper>
               </Grid>  
