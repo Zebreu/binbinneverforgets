@@ -304,7 +304,7 @@ def get_all_events():
         traceback.print_exc()
         return_values = []
     
-    return return_values 
+    return json.jsonify(return_values)
 
 
 
@@ -379,7 +379,7 @@ def update_inventory_log():
 def day_log(date):
     """Gives you information about the day. If it's a day in the past, it shows you what has been checked and it can be undone. 
     If it's the in future, it will show what will need to be checked"""
-    
+
     user_database = get_user_database_name(username = g.user)
     connection = sqlite3.connect(os.path.join(working_directory, user_database))
     date_click = pd.to_datetime(date)
