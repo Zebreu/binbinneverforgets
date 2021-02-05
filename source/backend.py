@@ -2,6 +2,7 @@ import time
 import sqlite3
 import os
 import hashlib
+import traceback
 
 import pandas as pd
 from flask import Flask, request, json, render_template, send_from_directory, abort, g
@@ -252,14 +253,14 @@ def upload_master_data(inventory_checked=True):
     return df.to_json(orient='split', index=False)
 
 
-@app.route('/upcoming_items')
+@app.route('/all_events')
 @tokenauth.login_required
-def get_upcoming_items():
+def get_all_events():
     """Creates a schedule ahead of time."""
     try:
         merged = inspect_inventory_log(username = g.user)
         schedules = generate_upcoming_tasks(merged)
-        
+
         return_values = []
         for schedule in schedules:
             title = schedule[0]
@@ -269,7 +270,19 @@ def get_upcoming_items():
                 item['title'] = title
                 item['date'] = event.strftime(format='%Y-%m-%d')
                 return_values.append(item)
+
+        user_database = get_user_database_name(username = g.user)
+        connection = sqlite3.connect(os.path.join(working_directory, user_database))
+        log = pd.read_sql('select * from inventory_log', con=connection)
+        log['title'] = log['item']
+        log = log[['date', 'title']]
+        log['date'] = log['date'].apply(lambda x: x.split(' ')[0])
+        log['color'] = 'green'
+        past = log.to_dict('records')
+        return_values.extend(past)
+
     except:
+        traceback.print_exc()
         return_values = []
     return json.jsonify(return_values)
 
