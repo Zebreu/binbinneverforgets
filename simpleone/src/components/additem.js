@@ -92,6 +92,7 @@ export default function AddItem() {
                 label="Allowed time between checks"
                 fullWidth
                 size = "small"
+                type="number"
                 onChange = {(e) => setFrequency(e.target.value)}
             />
             </DialogContent>
