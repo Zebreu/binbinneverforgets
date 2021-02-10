@@ -343,5 +343,5 @@ def update_inventory_log():
 
 app.register_blueprint(api, url_prefix='/api')
 
-# if __name__ == "__main__":
-#     app.run(debug = True, port = 4000)
+if __name__ == "__main__":
+    app.run(debug = True, port = 4000)
