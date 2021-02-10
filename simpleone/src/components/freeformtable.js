@@ -25,7 +25,7 @@ export default function FreeformTable() {
     const [report, setReport] = useState();
 
     function get_report() {
-        fetch('/create_report')
+        fetch('api/create_report')
         .then(res => res.json())
         .then(data => {setReport(data);});
     };

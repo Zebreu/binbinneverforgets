@@ -52,7 +52,7 @@ export default function Login () {
         formData.set("username", username);
         formData.set("password", password);
         
-        fetch('/users/register', {
+        fetch('api/users/register', {
             method: "POST",  
             body: formData})
         .then(res => res.json())
@@ -64,7 +64,7 @@ export default function Login () {
     }
 
     function onLogin() {
-        fetch('/users/login', {
+        fetch('api/users/login', {
             headers: new Headers({"Authorization": `Basic ${window.btoa(username + ':' + password)}`}),
             method: "GET"})
         .then(res => res.json())
