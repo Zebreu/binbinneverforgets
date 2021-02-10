@@ -64,7 +64,7 @@ export default function TaskList() {
     function buttonClick() {
         const formData = new FormData();
         formData.append("items", Object.keys(checked).filter(item => checked[item]))
-        fetch('/api/update_inventory_log', {
+        fetch('api/update_inventory_log', {
             method: "POST",
             body: formData,
             headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})
