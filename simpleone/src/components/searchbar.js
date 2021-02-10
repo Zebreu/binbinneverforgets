@@ -11,7 +11,7 @@ export default function SearchBar () {
 
     function sendValue(event) {
 
-        fetch('/search/'.concat('', event.target.value))
+        fetch('api/search/'.concat('', event.target.value))
             .then(res => res.json())
             .then(parseData);
     }

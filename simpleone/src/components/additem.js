@@ -38,7 +38,7 @@ export default function AddItem() {
         formData.set("name", name);
         formData.set("frequency", frequency);
 
-        fetch('/add_item', {
+        fetch('api/add_item', {
             method: "POST",  
             body: formData,
             headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})

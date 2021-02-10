@@ -19,7 +19,7 @@ export default function UploadButton() {
     function uploadFile(files) {
         const formData = new FormData();
         formData.append("file", files[0])
-        fetch('/upload_master_data', {
+        fetch('api/upload_master_data', {
             method: "POST",  
             body: formData,
             headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})

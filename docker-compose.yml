@@ -1,0 +1,27 @@
+version: "3"
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./simpleone
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 3000:3000
+      # - 443:443
+    volumes:
+      - /home/ubuntu/ssl:/etc/nginx/certs
+
+  backend:
+    restart: always
+    container_name: backend
+    command: gunicorn --bind 0.0.0.0:5000 backend:app
+    build: ./source
+    expose:
+      - 5000
+    volumes:
+      - ./source:/usr/src/backend
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=backend.py
+      - FLASK_DEBUG=1

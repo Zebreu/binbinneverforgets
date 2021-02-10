@@ -5,7 +5,7 @@ import hashlib
 import traceback
 
 import pandas as pd
-from flask import Flask, request, json, render_template, send_from_directory, abort, g
+from flask import Flask, Blueprint, request, json, render_template, send_from_directory, abort, g
 from passlib.apps import custom_app_context as pwd_context
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 
@@ -15,6 +15,7 @@ tokenauth = HTTPTokenAuth()
 working_directory = os.path.dirname(__file__)
 
 app = Flask(__name__) 
+api = Blueprint('api', __name__)
 
 tokens = dict()
 
@@ -143,12 +144,7 @@ def create_user(username, password):
     return True 
 
 
-@app.route('/')
-def hello_world():
-    return render_template("index.html")
-
-
-@app.route('/users/login', methods=['GET'])
+@api.route('/users/login', methods=['GET'])
 @auth.login_required
 def login_user():
     today = pd.Timestamp.today()
@@ -167,7 +163,7 @@ def login_user():
     return json.jsonify({'token_created': token_string, 'username': g.user, 'token_expiry': frontend_expiry})
 
 
-@app.route('/users/register', methods=['POST'])
+@api.route('/users/register', methods=['POST'])
 def register_user():
     print(request)
     username = request.form.get('username')
@@ -179,7 +175,7 @@ def register_user():
     return json.jsonify({ 'username_created': created })
     
 
-@app.route('/search/<name>')
+@api.route('/search/<name>')
 @tokenauth.login_required
 def search_rx(name):
     """Queries the DB for the relevant rows, based on search bar"""
@@ -203,7 +199,7 @@ def search_rx(name):
     return json.jsonify(search_return_dict)
 
 
-@app.route('/add_item', methods=['POST'])
+@api.route('/add_item', methods=['POST'])
 @tokenauth.login_required
 def add_item(inventory_checked=True):
     today = pd.Timestamp.today()
@@ -225,7 +221,7 @@ def add_item(inventory_checked=True):
     
     return df.to_json(orient='split', index=False)
 
-@app.route('/upload_master_data', methods=['POST'])
+@api.route('/upload_master_data', methods=['POST'])
 @tokenauth.login_required
 def upload_master_data(inventory_checked=True):
     """Updates a master table from an input file."""
@@ -253,7 +249,7 @@ def upload_master_data(inventory_checked=True):
     return df.to_json(orient='split', index=False)
 
 
-@app.route('/all_events')
+@api.route('/all_events')
 @tokenauth.login_required
 def get_all_events():
     """Creates a schedule ahead of time."""
@@ -287,7 +283,7 @@ def get_all_events():
     return json.jsonify(return_values)
 
 
-@app.route('/get_tasks')
+@api.route('/get_tasks')
 @tokenauth.login_required
 def get_tasks():
     try:
@@ -316,7 +312,7 @@ def get_tasks():
     return json.jsonify(grouped_tasks)
 
 
-@app.route('/create_report')
+@api.route('/create_report')
 @tokenauth.login_required
 def create_report():
     """Creates a report of due checks."""
@@ -328,7 +324,7 @@ def create_report():
     return merged.to_json(orient='split', index=False)
 
 
-@app.route('/update_inventory_log', methods=['POST'])
+@api.route('/update_inventory_log', methods=['POST'])
 @tokenauth.login_required
 def update_inventory_log():
     """Update the inventory log given a form with items and the time of their most recent check."""
@@ -345,6 +341,7 @@ def update_inventory_log():
 
     return json.jsonify(f'Updated {len(items)} items')
 
+app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == "__main__":
     app.run(debug = True, port = 4000)
