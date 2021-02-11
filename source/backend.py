@@ -177,7 +177,22 @@ def register_user():
     
     created = create_user(username, password)
     return json.jsonify({ 'username_created': created })
-    
+
+
+@app.route('/suggestion')
+@tokenauth.login_required
+def rx_suggestion():
+    """Queries the DB for all rx names and return them to be used as suggestions"""
+    user_database = get_user_database_name(g.user)
+    try:
+        connection = sqlite3.connect(os.path.join(working_directory, user_database))
+        inventory = pd.read_sql('SELECT DISTINCT item from inventory_log', con = connection)
+        suggestions_dict = inventory.to_dict(orient='list')
+        print(suggestions_dict)
+    except:
+        suggestions_dict = {'item': []}
+    return json.jsonify(suggestions_dict)
+
 
 @app.route('/search/<name>')
 @tokenauth.login_required
@@ -187,19 +202,22 @@ def search_rx(name):
     try:
         connection = sqlite3.connect(os.path.join(working_directory, user_database))
         inventory = pd.read_sql('SELECT * from inventory_log', con = connection)
-        checks_count = len(inventory[inventory['item'] == name].index)
+        low_name = name.lower()
+        sub_inventory = inventory[inventory['item'].str.lower() == low_name]
+        actual_name = sub_inventory['item'].iloc[0]
+        checks_count = len(sub_inventory.index)
+        print(checks_count)
         search_return_dict = {"checks_count": checks_count}
         # What else should we return when someone asks for information about an item?
-        # TODO: Name, last_check, next_check, need_to_check?
-        search_return_dict["name"] = name
-        last_checked = inventory[inventory['item'] == name]["date"].max()
-        search_return_dict["last_checked"] = last_checked
+        # TODO: next_check
+        search_return_dict["item"] = [actual_name]
+        search_return_dict["last_checked"] = sub_inventory["date"].max()
         merged = inspect_inventory_log(username = g.user)
-        need_to_check = merged[merged['item'] == name].iloc[0]['need_to_check'].astype(str)
+        need_to_check = merged[merged['item'] == actual_name].iloc[0]['need_to_check'].astype(str)
         search_return_dict["need_to_check"] = need_to_check
         # Maybe also add the median time between checks
     except:
-        search_return_dict = {}
+        search_return_dict = {'item': []}
     return json.jsonify(search_return_dict)
 
 

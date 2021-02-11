@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Checkbox, FormControl, FormGroup, FormControlLabel, FormLabel, Button } from '@material-ui/core';
+import { Grid, Checkbox, FormGroup, FormControlLabel, FormLabel, Button } from '@material-ui/core';
 import moment from 'moment';
 
 export default function TaskList() {

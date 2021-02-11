@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { Button } from '@material-ui/core';
 import { DropzoneDialog } from 'material-ui-dropzone';
 
@@ -7,7 +7,7 @@ export default function UploadButton() {
     const [open, setOpen] = useState(false);
 
     function handleResponse(data) {
-        if (data.status == '401') {
+        if (data.status === 401) {
             alert('Please login before using the tool');
             window.localStorage['username'] = 'No user';
         } else {

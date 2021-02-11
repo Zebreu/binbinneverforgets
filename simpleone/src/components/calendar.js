@@ -6,9 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 function handleDateClick (arg) { alert(arg.dateStr)}
 
 function MyCalendar (props) {
-    const [value, onChange] = useState(new Date());
-    const [events, setEvents] = useState([]);
-    const style = {backgroudColor: 'white'}      
+    const [events, setEvents] = useState([]);    
 
     function get_events() {
         fetch('/all_events', { headers : 
