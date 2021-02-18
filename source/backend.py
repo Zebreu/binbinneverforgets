@@ -45,7 +45,7 @@ def generate_upcoming_tasks(merged, exclude_past=True):
     today = pd.Timestamp.today()
 
     schedules = []
-    for i, row in merged.iterrows():
+    for _, row in merged.iterrows():
         schedule = pd.date_range(row['date_checked'], today+pd.Timedelta(13, 'W'), freq=f'{row["frequency"]*7}D')
         schedule = schedule[1:]
         if len(schedule) == 0:
@@ -270,6 +270,25 @@ def upload_master_data(inventory_checked=True):
     
     return df.to_json(orient='split', index=False)
 
+def gimme_schedules():
+    try:
+        merged = inspect_inventory_log(username = g.user)
+        schedules = generate_upcoming_tasks(merged)
+
+        return_values = []
+        for schedule in schedules:
+            title = schedule[0]
+            events = schedule[1]
+            for event in events:
+                item = dict()
+                item['title'] = title
+                item['date'] = event.strftime(format='%Y-%m-%d')
+                return_values.append(item)
+
+    except:
+        return_values = []
+    
+    return return_values                 
 
 @app.route('/all_events')
 @tokenauth.login_required
@@ -302,7 +321,10 @@ def get_all_events():
     except:
         traceback.print_exc()
         return_values = []
+    
     return json.jsonify(return_values)
+
+
 
 
 @app.route('/get_tasks')
@@ -362,6 +384,36 @@ def update_inventory_log():
     df.to_sql('inventory_log', con=connection, if_exists='append', index=False)
 
     return json.jsonify(f'Updated {len(items)} items')
+
+
+@app.route('/day_log/<date>', methods=['GET'])
+@tokenauth.login_required
+def day_log(date):
+    """Gives you information about the day. If it's a day in the past, it shows you what has been checked and it can be undone. 
+    If it's the in future, it will show what will need to be checked"""
+
+    user_database = get_user_database_name(username = g.user)
+    connection = sqlite3.connect(os.path.join(working_directory, user_database))
+    date_click = pd.to_datetime(date)
+    today = pd.Timestamp.today()
+
+    if date_click >= today:
+        all_schedules = gimme_schedules()
+        today_schedule = []
+        for entry in all_schedules:
+            if entry['date'] == date_click.strftime(format='%Y-%m-%d'):
+                today_schedule.append(entry)
+        print(today_schedule)
+        return json.jsonify(today_schedule)
+        
+
+    else:
+        date_list = pd.read_sql('SELECT * FROM inventory_log WHERE substr("date", 1, 10) = substr(:date, 1, 10)',con=connection,params={"date": date_click.strftime(format='%Y-%m-%d %H:%M:%S')})
+       
+        print(date_click.strftime(format='%Y-%m-%d %H:%M:%S'))
+        
+        return date_list.to_json(orient='split', index=False)
+
 
 
 if __name__ == "__main__":

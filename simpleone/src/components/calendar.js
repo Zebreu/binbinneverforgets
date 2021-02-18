@@ -3,7 +3,12 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from "@fullcalendar/interaction";
 
-function handleDateClick (arg) { alert(arg.dateStr)}
+function handleDateClick (arg) {
+    fetch('/day_log/'+arg.dateStr, { headers : 
+        new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})})
+    .then(res => res.json())
+    .then(date => console.log(date))
+}
 
 function MyCalendar (props) {
     const [events, setEvents] = useState([]);    
