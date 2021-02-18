@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
@@ -10,8 +10,7 @@ export default function SearchBar () {
         console.log(data);
     }
 
-    function sendValue(event) {
-        console.log(event.target.value)
+    function sendValue() {
         fetch('/suggestion', {
             headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})
         })
@@ -19,15 +18,22 @@ export default function SearchBar () {
             .then(parseData);
     }
 
+    useEffect(sendValue, []);
+
     function sendSelection(event, value, reason) {
-        console.log(event)
-        console.log(value)
-        console.log(reason)
-        fetch('/search/'.concat('', value), {
-            headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})
-        })
-            .then(res => res.json())
-            .then(parseData);
+        if (reason==="clear") {
+            //do something
+            sendValue(event)
+        } else {
+            console.log(event)
+            console.log(value)
+            console.log(reason)
+            fetch('/search/'.concat('', value), {
+                headers : new Headers({'Authorization': `Bearer ${window.localStorage['usertoken']}`})
+            })
+                .then(res => res.json())
+                .then(parseData);
+        }
     }
 
     return (
