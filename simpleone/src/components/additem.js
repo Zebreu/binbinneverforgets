@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -23,7 +23,7 @@ export default function AddItem() {
 
     function handleResponse(data) {
         console.log(data);
-        if (data.status == '401') {
+        if (data.status === 401) {
             alert('Please login before using the tool');
             window.localStorage['username'] = 'No user';
         } else {
