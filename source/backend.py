@@ -390,8 +390,10 @@ def day_log(date):
         
 
     else:
-        date_list = pd.read_sql('SELECT * FROM inventory_log WHERE date =:date',con=connection,params={"date": date_click.strftime(format='%Y-%m-%d %H:%M:%S')})
-        print(date_list)
+        date_list = pd.read_sql('SELECT * FROM inventory_log WHERE substr("date", 1, 10) = substr(:date, 1, 10)',con=connection,params={"date": date_click.strftime(format='%Y-%m-%d %H:%M:%S')})
+       
+        print(date_click.strftime(format='%Y-%m-%d %H:%M:%S'))
+        
         return date_list.to_json(orient='split', index=False)
 
 
